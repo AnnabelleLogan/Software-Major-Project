@@ -1,0 +1,50 @@
+body {
+    background-color: #ffffff; /* Change to any color hex code */
+    color: #000000;
+    font-family: "Times New Roman", Georgia, serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Centers all content on the page */
+.container {
+    text-align: center;
+    padding: 20px;
+    font-family: "Times New Roman", Georgia, serif;
+}
+
+/* Styles the heading above the image */
+.app-title {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+/* Image styling */
+.center-image {
+    width: 500px;
+    max-width: 90%; /* Keeps it responsive on smaller screens */
+    height: auto;
+    margin-bottom: 30px;
+}
+
+/* Navigation button styling */
+.nav-button {
+    display: inline-block;
+    padding: 12px 28px;
+    background-color: #000000;
+    color: white;
+    text-decoration: none; /* Removes link underline */
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+    font-family: "Times New Roman", Georgia, serif;
+}
+
+.nav-button:hover {
+    background-color: #000000;
+}
