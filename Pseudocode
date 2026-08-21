@@ -1,0 +1,42 @@
+PROGRAM EpilogApp
+
+    INITIALIZE Page Load
+        LOAD Stylesheet "style.css"
+        SET Title = "Epilog"
+        
+        DISPLAY Header "Epilog"
+        DISPLAY Image "EventGraph"
+        
+        DISPLAY Button "Add Log" (ID: open-modal-btn)
+        DISPLAY Link "Seizure Logs" -> Navigate to "/Log_Summary"
+        
+        INITIALIZE Modal "log-modal" (HIDDEN by default)
+            DISPLAY Close Button "x"
+            DISPLAY Subheader "New Log Entry"
+            
+            DEFINE FORM (Action: "/save_log", Method: POST)
+                INPUT Dropdown "episode_type" (REQUIRED):
+                    - "Myoclonic Seizure"
+                    - "Absent Seizure"
+                    - "Grand Mal Seizure"
+                    - "Other"
+                
+                INPUT Text Area "details" (REQUIRED, Placeholder: "Enter notes...")
+                
+                DISPLAY Submit Button "Save Log"
+            END FORM
+        END Modal
+    END INITIALIZE
+
+    // UI Event Handlers (JavaScript)
+    WHEN Page finishes loading:
+        ON CLICK "Add Log" Button:
+            SHOW Modal "log-modal"
+            
+        ON CLICK Close Button "x":
+            HIDE Modal "log-modal"
+            
+        ON CLICK Outside Modal Area:
+            HIDE Modal "log-modal"
+
+END PROGRAM
