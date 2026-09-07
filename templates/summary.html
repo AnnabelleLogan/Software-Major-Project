@@ -1,32 +1,33 @@
-<!DOCTYPE html>
+print them. Create or update your templates/summary.html file with this exact dynamic loop:html<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Epilog - Log Summary</title>
+    <title>Epilog - Seizure Logs</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <main class="container">
         <h1 class="app-title">Seizure Logs</h1>
-
-        <!-- Navigation back to Homepage -->
-        <div class="button-group" style="margin-bottom: 30px;">
-            <a href="/" class="nav-button">Back to Home</a>
+        
+        <div style="margin-bottom: 30px;">
+            <a class="nav-button" href="{{ url_for('home') }}">Back to Home</a>
         </div>
 
-        <!-- Log Display List -->
+        <!-- Dynamic Container for Logs -->
         <div id="log-display-container">
             {% if logs %}
                 {% for log in logs %}
                     <div class="log-card">
-                        <h3 class="log-card-title">{{ log.episode_type }}</h3>
-                        <small class="log-card-date">Logged on: {{ log.log_date }} at {{ log.log_time }}</small>
-                        <p class="log-card-notes">{{ log.details }}</p>
+                        <!-- log[1] = episode_type, log[3] = log_date, log[4] = log_time -->
+                        <h3 class="log-card-title">{{ log[1] }}</h3>
+                        <span class="log-card-date">Logged on: {{ log[3] }} at {{ log[4] }}</span>
+                        <!-- log[2] = details -->
+                        <p class="log-card-notes">{{ log[2] }}</p>
                     </div>
                 {% endfor %}
             {% else %}
-                <p style="color: #666666;">No logs recorded yet.</p>
+                <p style="color: #666;">No seizure logs recorded yet.</p>
             {% endif %}
         </div>
     </main>

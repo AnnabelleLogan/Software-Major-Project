@@ -1,13 +1,19 @@
+import os
 from flask import Flask, request, render_template, redirect, url_for
 from sqlalchemy import create_engine, text
 from datetime import datetime
 
 app = Flask(__name__)
 
-# Engine connection to SQLite
-engine = create_engine('sqlite:///.database/Users.db')
+# Ensure the database directory exists
+db_dir = os.path.join(app.root_path, '.database')
+os.makedirs(db_dir, exist_ok=True)
+db_path = os.path.join(db_dir, 'Users.db')
 
-# Ensure table exists with date and time columns
+# Engine connection to SQLite
+engine = create_engine(f'sqlite:///{db_path}')
+
+# Ensure table exists
 with engine.connect() as conn:
     conn.execute(text('''
         CREATE TABLE IF NOT EXISTS logs (
@@ -23,21 +29,17 @@ with engine.connect() as conn:
 
 @app.route('/')
 def home():
-    print('Loading homepage...')
     return render_template('index.html')
 
 @app.route('/save_log', methods=['POST'])
 def save_log():
-    # Retrieve form data
     episode_type = request.form.get('episode_type') or request.form.get('log-title')
     details = request.form.get('details') or request.form.get('log-details')
 
-    # Get current date and time
     now = datetime.now()
-    current_date = now.strftime("%Y-%m-%d")  # e.g., "2026-08-20"
-    current_time = now.strftime("%H:%M:%S")  # e.g., "14:30:15"
+    current_date = now.strftime("%Y-%m-%d")
+    current_time = now.strftime("%H:%M:%S")
 
-    # Save entry along with date and time
     if episode_type and details:
         with engine.connect() as conn:
             conn.execute(
@@ -54,7 +56,8 @@ def save_log():
             )
             conn.commit()
 
-    return redirect(url_for('home'))
+    # Redirect directly to the summary page to see the new entry
+    return redirect(url_for('log_summary'))
 
 @app.route('/Log_Summary')
 def log_summary():
@@ -64,4 +67,4 @@ def log_summary():
     return render_template('summary.html', logs=logs)
 
 if __name__ == '__main__':
-    app.run(debug=True, reloader_type='stat', port=5000)
+    app.run(debug=True, port=5000)

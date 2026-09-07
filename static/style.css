@@ -24,13 +24,6 @@ body {
     margin-bottom: 20px;
 }
 
-/* --- YOUR ORIGINAL IMAGE STYLING (UNTOUCHED) --- */
-.center-image {
-    width: 500px;
-    max-width: 90%; /* Keeps it responsive on smaller screens */
-    height: auto;
-    margin-bottom: 30px;
-}
 
 /* Container to stack homepage buttons vertically on their own rows */
 .button-group {
@@ -170,4 +163,34 @@ body {
     margin: 0;
     font-size: 1rem;
     white-space: pre-wrap;
+}
+
+#log-form label {
+    display: block;
+    margin-top: 12px;
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+}
+
+/* Explicitly targeted select elements and textareas */
+#log-form select option {
+    background-color: #1e1e2e;
+    color: #ffffff;
+}
+#log-form textarea {
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background-color: #1e1e2e;
+    color: #fff;
+    box-sizing: border-box;
+    font-family: "Times New Roman", Georgia, serif;
+}
+
+/* Clear focus outlines for accessible dark fields */
+#log-form select:focus, 
+#log-form textarea:focus {
+    outline: none;
+    border-color: #666;
 }

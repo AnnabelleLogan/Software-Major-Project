@@ -10,14 +10,9 @@
     <main class="container">
         <h1 class="app-title" style="text-align: center;">Epilog</h1>
         
-        <div style="text-align: center; margin-top: 30px;">
-            <img src="{{ url_for('static', filename='2026-08-19 at 10.21.11 am.png') }}" alt="EventGraph" class="center-image" title="EventGraph">
-        </div>
-
-        <!-- Homepage Action Buttons Stacked Vertically -->
         <div class="button-group" style="text-align: center; margin-top: 20px;">
             <button type="button" id="open-modal-btn" class="nav-button">Add Log</button>
-            <a class="nav-button" href="/Log_Summary" style="display: inline-block;">Seizure Logs</a>
+            <a class="nav-button" href="{{ url_for('log_summary') }}" style="display: inline-block;">Seizure Logs</a>
         </div>
 
         <!-- Modal Popup Container -->
@@ -26,10 +21,8 @@
                 <span id="close-modal-btn" class="close-btn">&times;</span>
                 <h2 style="text-align: center;">New Log Entry</h2>
              
-                <!-- Form posts data directly to Flask save_log route -->
-                <form action="/save_log" method="POST">
-
-                    <div class="mb-3">
+                <form id="log-form" action="{{ url_for('save_log') }}" method="POST">
+                    <div>
                         <label for="log-title">Episode type:</label>
                         <select id="log-title" name="episode_type" required>
                             <option value="" disabled selected>Select an episode type...</option>
@@ -39,12 +32,12 @@
                             <option value="Other">Other</option>
                         </select>
                     </div>
-
-                    <div class="mb-3">
+                
+                    <div>
                         <label for="log-details">Details / Notes:</label>
                         <textarea id="log-details" name="details" required placeholder="Enter notes..."></textarea>
                     </div>
-
+                
                     <div class="modal-button-row">
                         <button type="submit" class="nav-button">Save Log</button>
                     </div>
