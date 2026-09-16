@@ -1,9 +1,9 @@
 import os
 import json
+from datetime import datetime, date
 from flask import Flask, request, render_template, redirect, url_for, session, jsonify
 from sqlalchemy import create_engine, text
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 app = Flask(__name__)
@@ -393,7 +393,37 @@ def delete_medication(med_id):
 
     return redirect(url_for('medical'))
 
-# --- DATA / ANALYTICS ROUTES ---
+# --- API & DATA ROUTES ---
+
+@app.route('/api/last_seizure')
+def api_last_seizure():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    user_id = session['user_id']
+
+    with engine.connect() as conn:
+        result = conn.execute(
+            text('''
+                SELECT log_date 
+                FROM logs 
+                WHERE user_id = :u AND log_date IS NOT NULL AND log_date != '' 
+                ORDER BY log_date DESC 
+                LIMIT 1
+            '''),
+            {"u": user_id}
+        ).fetchone()
+
+    if result and result[0]:
+        try:
+            last_date = datetime.strptime(result[0], "%Y-%m-%d").date()
+            today = date.today()
+            days_free = (today - last_date).days
+            return jsonify({'days_free': max(0, days_free), 'last_date': result[0]})
+        except ValueError:
+            pass
+
+    return jsonify({'days_free': 0, 'last_date': None})
 
 @app.route('/data')
 def data_page():
@@ -408,7 +438,6 @@ def api_chart_data():
 
     user_id = session['user_id']
 
-    # Generate sequence of the past 12 months
     today = datetime.now()
     month_keys = []
     for i in range(11, -1, -1):
@@ -418,7 +447,6 @@ def api_chart_data():
     monthly_data = {month: 0 for month in month_keys}
 
     with engine.connect() as conn:
-        # Fetch 12-month time series data
         month_query = text('''
             SELECT strftime('%Y-%m', log_date) as month_period, COUNT(id) as count 
             FROM logs 
@@ -427,7 +455,6 @@ def api_chart_data():
         ''')
         month_result = conn.execute(month_query, {"u": user_id}).fetchall()
 
-        # Fetch trigger distribution data
         trigger_query = text('''
             SELECT trigger, COUNT(id) as count
             FROM logs

@@ -3,22 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Epilog</title>
+    <title>Epilog - Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .top-bar {
+            width: 100%;
+            background-color: #000000;
+            color: #ffffff;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .brand-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0;
+            color: #ffffff;
+        }
+
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-btn {
+            background-color: #333333;
+            color: #ffffff;
+            padding: 8px 16px;
+            font-size: 0.95rem;
+            font-family: "Times New Roman", Georgia, serif;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dropdown-btn:hover {
+            background-color: #444444;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 6px;
+            background-color: #ffffff;
+            min-width: 160px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #cccccc;
+            z-index: 1000;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-menu a {
+            color: #000000;
+            padding: 10px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.95rem;
+            font-family: "Times New Roman", Georgia, serif;
+            text-align: left;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f4f5f5;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: #e2e8f0;
+            margin: 0;
+        }
+
+        .logout-link {
+            color: #8b0000 !important;
+            font-weight: bold;
+        }
+
+        .streak-card {
+            background-color: #f4f5f5;
+            color: #000000;
+            border-radius: 12px;
+            padding: 30px 20px;
+            width: 100%;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .streak-title {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #555555;
+            margin: 0 0 10px 0;
+            font-weight: bold;
+        }
+
+        .streak-counter {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #000000;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .streak-subtext {
+            font-size: 0.9rem;
+            color: #666666;
+            margin: 0;
+        }
+
+        .main-action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .main-action-buttons .nav-button {
+            width: 100%;
+            max-width: 320px;
+            padding: 14px 20px;
+        }
+    </style>
 </head>
 <body>
-    <main class="container">
-        <h1 class="app-title">Epilog</h1>
-        <p style="margin-top: -20px; margin-bottom: 25px; color: #555;">Welcome, {{ username }}</p>
 
-        <div class="button-group">
-            <button type="button" id="open-modal-btn" class="nav-button">Add Log</button>
-            <a class="nav-button" href="{{ url_for('summary') }}">Seizure Logs</a>
-            <a class="nav-button" href="{{ url_for('medical') }}">Medications</a>
-            <a class="nav-button" href="{{ url_for('data_page') }}">Analytics</a>
-            <a class="nav-button" href="{{ url_for('logout') }}" style="background-color: #8b0000;">Log Out</a>
+    <!-- Top Navigation Bar -->
+    <header class="top-bar">
+        <h1 class="brand-title">Epilog</h1>
+        
+        <div class="user-dropdown">
+            <button type="button" class="dropdown-btn" onclick="toggleDropdown()">
+                <span>{{ username }}</span> &#9660;
+            </button>
+            <div id="user-dropdown-menu" class="dropdown-menu">
+                <a href="{{ url_for('data_page') }}">Analytics</a>
+                <a href="{{ url_for('medical') }}">Medications</a>
+                <div class="dropdown-divider"></div>
+                <a href="{{ url_for('logout') }}" class="logout-link">Log Out</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container">
+
+        <!-- Seizure Free Day Counter Card -->
+        <div class="streak-card">
+            <p class="streak-title">Seizure Free Counter</p>
+            <div id="streak-days" class="streak-counter">0</div>
+            <p id="streak-subtext" class="streak-subtext">Days since last logged seizure</p>
         </div>
 
+        <!-- Add seizure log -->
+        <div class="main-action-buttons">
+            <button type="button" id="open-modal-btn" class="nav-button">Add Seizure Log</button>
+            <a class="nav-button" href="{{ url_for('summary') }}" style="background-color: #333333;">See Seizure Logs</a>
+        </div>
+
+        <!-- Episode model -->
         <div id="log-modal" class="modal">
             <div class="modal-content">
                 <span id="close-modal-btn" class="close-btn">&times;</span>
@@ -87,7 +244,7 @@
                     </div>
                 
                     <div class="modal-button-row">
-                        <button type="submit" class="nav-button">Save Log</button>
+                        <button type="submit" class="nav-button full-width">Save Log</button>
                     </div>
                 </form>
             </div>
@@ -95,21 +252,55 @@
     </main>
 
     <script>
+        function toggleDropdown() {
+            document.getElementById('user-dropdown-menu').classList.toggle('show');
+        }
+
+        async function fetchSeizureFreeDays() {
+            try {
+                const response = await fetch('/api/last_seizure');
+                if (response.ok) {
+                    const data = await response.json();
+                    const daysElem = document.getElementById('streak-days');
+                    const subtextElem = document.getElementById('streak-subtext');
+
+                    daysElem.innerText = data.days_free;
+
+                    if (data.last_date) {
+                        subtextElem.innerText = `Days since last logged seizure (${data.last_date})`;
+                    } else {
+                        subtextElem.innerText = 'No seizure logs recorded yet';
+                    }
+                }
+            } catch (e) {
+                console.error('Error fetching seizure free days:', e);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+            fetchSeizureFreeDays();
+
             const modal = document.getElementById('log-modal');
             const openBtn = document.getElementById('open-modal-btn');
             const closeBtn = document.getElementById('close-modal-btn');
 
             if (openBtn) openBtn.addEventListener('click', () => modal.style.display = 'flex');
             if (closeBtn) closeBtn.addEventListener('click', () => modal.style.display = 'none');
+
             window.addEventListener('click', (event) => {
-                if (event.target === modal) modal.style.display = 'none';
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+                if (!event.target.closest('.user-dropdown')) {
+                    const dropdown = document.getElementById('user-dropdown-menu');
+                    if (dropdown.classList.contains('show')) {
+                        dropdown.classList.remove('show');
+                    }
+                }
             });
 
-            // Dynamic Custom Input Handler for Episode Type
             const logTypeSelect = document.getElementById('log-type');
             const customTypeInput = document.getElementById('custom-episode-type');
-
             logTypeSelect.addEventListener('change', () => {
                 if (logTypeSelect.value === 'Other') {
                     customTypeInput.style.display = 'block';
@@ -121,10 +312,8 @@
                 }
             });
 
-            // Dynamic Custom Input Handler for Trigger
             const triggerSelect = document.getElementById('trigger');
             const customTriggerInput = document.getElementById('custom-trigger');
-
             triggerSelect.addEventListener('change', () => {
                 if (triggerSelect.value === 'Other') {
                     customTriggerInput.style.display = 'block';

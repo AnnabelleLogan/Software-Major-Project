@@ -5,14 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Epilog - Medical & Medications</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .top-bar {
+            width: 100%;
+            background-color: #000000;
+            color: #ffffff;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .brand-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-btn {
+            background-color: #333333;
+            color: #ffffff;
+            padding: 8px 16px;
+            font-size: 0.95rem;
+            font-family: "Times New Roman", Georgia, serif;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dropdown-btn:hover {
+            background-color: #444444;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 6px;
+            background-color: #ffffff;
+            min-width: 160px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #cccccc;
+            z-index: 1000;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-menu a {
+            color: #000000;
+            padding: 10px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.95rem;
+            font-family: "Times New Roman", Georgia, serif;
+            text-align: left;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f4f5f5;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: #e2e8f0;
+            margin: 0;
+        }
+
+        .logout-link {
+            color: #8b0000 !important;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
+
+    <!-- Top Navigation Bar -->
+    <header class="top-bar">
+        <a href="{{ url_for('home') }}" class="brand-title">Epilog</a>
+        
+        <div class="user-dropdown">
+            <button type="button" class="dropdown-btn" onclick="toggleDropdown()">
+                <span>Menu</span> &#9660;
+            </button>
+            <div id="user-dropdown-menu" class="dropdown-menu">
+                <a href="{{ url_for('home') }}">Home</a>
+                <a href="{{ url_for('summary') }}">Seizure Logs</a>
+                <a href="{{ url_for('data_page') }}">Analytics</a>
+                <div class="dropdown-divider"></div>
+                <a href="{{ url_for('logout') }}" class="logout-link">Log Out</a>
+            </div>
+        </div>
+    </header>
+
     <main class="container">
         <h1 class="app-title">Medications</h1>
-
-        <div style="display: flex; justify-content: center; width: 100%; margin-bottom: 25px;">
-            <a class="nav-button" href="{{ url_for('home') }}">Back to Home</a>
-        </div>
 
         <!-- Add Medication Form -->
         <div class="auth-card" style="max-width: 500px; margin-bottom: 30px;">
@@ -150,6 +253,10 @@
     </div>
 
     <script>
+        function toggleDropdown() {
+            document.getElementById('user-dropdown-menu').classList.toggle('show');
+        }
+
         function openEditMedModal(btnElement) {
             const id = btnElement.getAttribute('data-id');
             const name = btnElement.getAttribute('data-name');
@@ -174,6 +281,12 @@
         window.onclick = function(event) {
             const modal = document.getElementById('edit-med-modal');
             if (event.target === modal) closeEditMedModal();
+            if (!event.target.closest('.user-dropdown')) {
+                const dropdown = document.getElementById('user-dropdown-menu');
+                if (dropdown && dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            }
         }
     </script>
 </body>

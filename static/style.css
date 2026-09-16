@@ -14,18 +14,16 @@ body {
     align-items: center;
 }
 
-/* Centered Main Container */
 .container {
     width: 100%;
     max-width: 650px;
-    padding: 60px 20px 40px;
+    padding: 40px 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
 }
 
-/* Heading Styling */
 .app-title {
     font-size: 3.5rem;
     font-weight: bold;
@@ -33,7 +31,6 @@ body {
     margin-bottom: 30px;
 }
 
-/* Homepage & Summary Nav Buttons */
 .button-group {
     display: flex;
     flex-direction: column;
@@ -64,7 +61,6 @@ body {
     background-color: #333333;
 }
 
-/* Log Display Feed */
 #log-display-container {
     margin-top: 20px;
     display: flex;
@@ -99,7 +95,6 @@ body {
     color: #333333;
 }
 
-/* Modal Styling */
 .modal {
     display: none;
     position: fixed;
