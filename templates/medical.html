@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epilog - Medical & Medications</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <h1 class="app-title">Medications</h1>
+
+        <div style="display: flex; justify-content: center; width: 100%; margin-bottom: 25px;">
+            <a class="nav-button" href="{{ url_for('home') }}">Back to Home</a>
+        </div>
+
+        <!-- Add Medication Form -->
+        <div class="auth-card" style="max-width: 500px; margin-bottom: 30px;">
+            <h2>Add Medication</h2>
+            <form action="{{ url_for('medical') }}" method="POST" enctype="multipart/form-data" class="auth-form">
+                <div class="form-group">
+                    <label for="med_name">Medication Name:</label>
+                    <input type="text" id="med_name" name="med_name" placeholder="e.g. Keppra, Lamictal" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="reason">Reason / Purpose:</label>
+                    <input type="text" id="reason" name="reason" placeholder="e.g. Seizure Prevention, Anxiety">
+                </div>
+
+                <div class="form-group">
+                    <label for="dosage">Dosage Amount & Unit:</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="number" step="any" id="dosage" name="dosage" placeholder="e.g. 500" style="flex: 2;">
+                        <select name="dosage_unit" id="dosage_unit" style="flex: 1;" required>
+                            <option value="" disabled selected>Unit</option>
+                            <option value="mg">mg</option>
+                            <option value="g">g</option>
+                            <option value="mcg">mcg</option>
+                            <option value="mL">mL</option>
+                            <option value="IU">IU</option>
+                            <option value="pills">pills</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="frequency">Frequency / Times:</label>
+                    <input type="text" id="frequency" name="frequency" placeholder="e.g. Twice daily (8 AM / 8 PM)">
+                </div>
+
+                <div class="form-group">
+                    <label for="med_image">Medication Photo (Optional):</label>
+                    <input type="file" id="med_image" name="med_image" accept="image/*" style="border: none; padding: 4px 0;">
+                </div>
+
+                <div class="modal-button-row">
+                    <button type="submit" class="nav-button full-width">Save Medication</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Medication List Display -->
+        <div id="log-display-container">
+            {% if medications %}
+                {% for med in medications %}
+                    <div class="log-card">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <h3 class="log-card-title">{{ med[2] }}</h3>
+
+                            <div style="display: flex; gap: 8px;">
+                                <button type="button" class="nav-button" style="padding: 4px 10px; font-size: 0.85rem;" 
+                                        data-id="{{ med[0] }}"
+                                        data-name="{{ med[2] }}"
+                                        data-dosage="{{ med[3] or '' }}"
+                                        data-unit="{{ med[4] or '' }}"
+                                        data-reason="{{ med[5] or '' }}"
+                                        data-frequency="{{ med[6] or '' }}"
+                                        onclick="openEditMedModal(this)">Edit</button>
+
+                                <form action="{{ url_for('delete_medication', med_id=med[0]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this medication?');" style="margin: 0;">
+                                    <button type="submit" class="nav-button" style="padding: 4px 10px; font-size: 0.85rem; background-color: #8b0000;">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                        {% if med[5] %}
+                            <p class="log-card-trigger"><strong>Reason:</strong> {{ med[5] }}</p>
+                        {% endif %}
+                        {% if med[3] %}
+                            <p class="log-card-trigger"><strong>Dosage:</strong> {{ med[3] }} {{ med[4] }}</p>
+                        {% endif %}
+                        {% if med[6] %}
+                            <p class="log-card-location"><strong>Frequency:</strong> {{ med[6] }}</p>
+                        {% endif %}
+                        {% if med[7] %}
+                            <div style="margin-top: 10px;">
+                                <img src="{{ url_for('static', filename='uploads/' + med[7]) }}" alt="{{ med[2] }}" style="max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid #ccc;">
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p style="color: #666; text-align: center;">No medications added yet.</p>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- Modal for Editing Medications -->
+    <div id="edit-med-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeEditMedModal()">&times;</span>
+            <h2 style="text-align: center; margin-top: 0; margin-bottom: 20px;">Edit Medication</h2>
+            
+            <form id="edit-med-form" method="POST" enctype="multipart/form-data" class="auth-form">
+                <div class="form-group">
+                    <label for="edit-med-name">Medication Name:</label>
+                    <input type="text" id="edit-med-name" name="med_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-reason">Reason / Purpose:</label>
+                    <input type="text" id="edit-reason" name="reason">
+                </div>
+                <div class="form-group">
+                    <label for="edit-dosage">Dosage Amount & Unit:</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="number" step="any" id="edit-dosage" name="dosage" style="flex: 2;">
+                        <select name="dosage_unit" id="edit-dosage-unit" style="flex: 1;" required>
+                            <option value="mg">mg</option>
+                            <option value="g">g</option>
+                            <option value="mcg">mcg</option>
+                            <option value="mL">mL</option>
+                            <option value="IU">IU</option>
+                            <option value="pills">pills</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="edit-frequency">Frequency:</label>
+                    <input type="text" id="edit-frequency" name="frequency">
+                </div>
+                <div class="form-group">
+                    <label for="edit-med-image">Change Photo (Optional):</label>
+                    <input type="file" id="edit-med-image" name="med_image" accept="image/*" style="border: none; padding: 4px 0;">
+                </div>
+                <div class="modal-button-row">
+                    <button type="submit" class="nav-button full-width">Update Medication</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openEditMedModal(btnElement) {
+            const id = btnElement.getAttribute('data-id');
+            const name = btnElement.getAttribute('data-name');
+            const dosage = btnElement.getAttribute('data-dosage');
+            const unit = btnElement.getAttribute('data-unit');
+            const reason = btnElement.getAttribute('data-reason');
+            const frequency = btnElement.getAttribute('data-frequency');
+
+            document.getElementById('edit-med-form').action = '/edit_medication/' + id;
+            document.getElementById('edit-med-name').value = name;
+            document.getElementById('edit-dosage').value = dosage;
+            document.getElementById('edit-dosage-unit').value = unit || 'mg';
+            document.getElementById('edit-reason').value = reason;
+            document.getElementById('edit-frequency').value = frequency;
+            document.getElementById('edit-med-modal').style.display = 'flex';
+        }
+
+        function closeEditMedModal() {
+            document.getElementById('edit-med-modal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('edit-med-modal');
+            if (event.target === modal) closeEditMedModal();
+        }
+    </script>
+</body>
+</html>

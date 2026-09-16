@@ -8,29 +8,77 @@
 </head>
 <body>
     <main class="container">
-        <h1 class="app-title" style="text-align: center;">Epilog</h1>
-        
-        <div class="button-group" style="text-align: center; margin-top: 20px;">
+        <h1 class="app-title">Epilog</h1>
+        <p style="margin-top: -20px; margin-bottom: 25px; color: #555;">Welcome, {{ username }}</p>
+
+        <div class="button-group">
             <button type="button" id="open-modal-btn" class="nav-button">Add Log</button>
-            <a class="nav-button" href="{{ url_for('log_summary') }}" style="display: inline-block;">Seizure Logs</a>
+            <a class="nav-button" href="{{ url_for('summary') }}">Seizure Logs</a>
+            <a class="nav-button" href="{{ url_for('medical') }}">Medications</a>
+            <a class="nav-button" href="{{ url_for('data_page') }}">Analytics</a>
+            <a class="nav-button" href="{{ url_for('logout') }}" style="background-color: #8b0000;">Log Out</a>
         </div>
 
-        <!-- Modal Popup Container -->
         <div id="log-modal" class="modal">
             <div class="modal-content">
                 <span id="close-modal-btn" class="close-btn">&times;</span>
-                <h2 style="text-align: center;">New Log Entry</h2>
+                <h2 style="text-align: center; margin-top: 0; margin-bottom: 20px;">New Log Entry</h2>
              
                 <form id="log-form" action="{{ url_for('save_log') }}" method="POST">
                     <div>
-                        <label for="log-title">Episode type:</label>
-                        <select id="log-title" name="episode_type" required>
+                        <label for="log-type">Episode type:</label>
+                        <select id="log-type" name="episode_type" required>
                             <option value="" disabled selected>Select an episode type...</option>
                             <option value="Myoclonic Seizure">Myoclonic Seizure</option>
                             <option value="Absent Seizure">Absent Seizure</option>
-                            <option value="Grand Mal Seizure">Grand Mal Seizure</option>
+                            <option value="Tonic-Clonic Seizure">Tonic-Clonic Seizure</option>
+                            <option value="Clonic Seizure">Clonic Seizure</option>
+                            <option value="Atonic Seizure">Atonic Seizure</option>
+                            <option value="Tonic Seizure">Tonic Seizure</option>
+                            <option value="Aura">Aura</option>
                             <option value="Other">Other</option>
                         </select>
+                        <input type="text" id="custom-episode-type" name="custom_episode_type" placeholder="Specify episode type..." style="display: none; margin-top: 8px;">
+                    </div>
+                
+                    <div>
+                        <label for="trigger">Potential Trigger:</label>
+                        <select id="trigger" name="trigger">
+                            <option value="" disabled selected>Select a potential trigger...</option>
+                            <option value="Sleep Deprivation">Sleep Deprivation</option>
+                            <option value="Stress">Stress</option>
+                            <option value="Missed Medication">Missed Medication</option>
+                            <option value="Skipped Meals">Skipped Meals</option>
+                            <option value="Dehydration">Dehydration</option>
+                            <option value="Flashing Lights">Flashing Lights</option>
+                            <option value="Illness or Fever">Illness or Fever</option>
+                            <option value="Hormonal Changes">Hormonal Changes</option>
+                            <option value="Alcohol">Alcohol</option>
+                            <option value="Caffeine or Stimulants">Caffeine or Stimulants</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <input type="text" id="custom-trigger" name="custom_trigger" placeholder="Specify potential trigger..." style="display: none; margin-top: 8px;">
+                    </div>
+                
+                    <div>
+                        <label for="log-date">Date of Episode:</label>
+                        <input type="date" id="log-date" name="event_date">
+                    </div>
+                
+                    <div style="display: flex; gap: 10px;">
+                        <div style="flex: 1;">
+                            <label for="time-1">Start Time:</label>
+                            <input type="time" id="time-1" name="time_1">
+                        </div>
+                        <div style="flex: 1;">
+                            <label for="time-2">End Time:</label>
+                            <input type="time" id="time-2" name="time_2">
+                        </div>
+                    </div>
+                
+                    <div>
+                        <label for="log-location">Location:</label>
+                        <textarea id="log-location" name="location" placeholder="Enter location..."></textarea>
                     </div>
                 
                     <div>
@@ -46,28 +94,45 @@
         </div>
     </main>
 
-    <!-- Modal Toggle Script -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const modal = document.getElementById('log-modal');
             const openBtn = document.getElementById('open-modal-btn');
             const closeBtn = document.getElementById('close-modal-btn');
 
-            if (openBtn) {
-                openBtn.addEventListener('click', () => {
-                    modal.style.display = 'flex';
-                });
-            }
-
-            if (closeBtn) {
-                closeBtn.addEventListener('click', () => {
-                    modal.style.display = 'none';
-                });
-            }
-
+            if (openBtn) openBtn.addEventListener('click', () => modal.style.display = 'flex');
+            if (closeBtn) closeBtn.addEventListener('click', () => modal.style.display = 'none');
             window.addEventListener('click', (event) => {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
+                if (event.target === modal) modal.style.display = 'none';
+            });
+
+            // Dynamic Custom Input Handler for Episode Type
+            const logTypeSelect = document.getElementById('log-type');
+            const customTypeInput = document.getElementById('custom-episode-type');
+
+            logTypeSelect.addEventListener('change', () => {
+                if (logTypeSelect.value === 'Other') {
+                    customTypeInput.style.display = 'block';
+                    customTypeInput.required = true;
+                } else {
+                    customTypeInput.style.display = 'none';
+                    customTypeInput.required = false;
+                    customTypeInput.value = '';
+                }
+            });
+
+            // Dynamic Custom Input Handler for Trigger
+            const triggerSelect = document.getElementById('trigger');
+            const customTriggerInput = document.getElementById('custom-trigger');
+
+            triggerSelect.addEventListener('change', () => {
+                if (triggerSelect.value === 'Other') {
+                    customTriggerInput.style.display = 'block';
+                    customTriggerInput.required = true;
+                } else {
+                    customTriggerInput.style.display = 'none';
+                    customTriggerInput.required = false;
+                    customTriggerInput.value = '';
                 }
             });
         });

@@ -1,196 +1,206 @@
-/* Base Page Settings */
+* {
+    box-sizing: border-box;
+}
+
 body {
-    background-color: #ffffff; /* Change to any color hex code */
+    background-color: #f7f9f7;
     color: #000000;
     font-family: "Times New Roman", Georgia, serif;
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-/* Centers all content on the page */
+/* Centered Main Container */
 .container {
+    width: 100%;
+    max-width: 650px;
+    padding: 60px 20px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-    padding: 20px;
-    font-family: "Times New Roman", Georgia, serif;
 }
 
-/* Styles the heading above the image */
+/* Heading Styling */
 .app-title {
-    font-size: 3rem;
-    margin-bottom: 20px;
+    font-size: 3.5rem;
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 30px;
 }
 
-
-/* Container to stack homepage buttons vertically on their own rows */
+/* Homepage & Summary Nav Buttons */
 .button-group {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 15px;
+    width: 100%;
 }
 
-/* Navigation button styling */
 .nav-button {
-    display: inline-block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: 12px 28px;
     background-color: #000000;
-    color: white;
-    text-decoration: none; /* Removes link underline */
-    border-radius: 8px;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 10px;
     font-weight: bold;
     font-size: 1rem;
-    transition: background-color 0.2s;
     font-family: "Times New Roman", Georgia, serif;
     border: none;
     cursor: pointer;
     width: 220px;
-    box-sizing: border-box;
-    text-align: center;
+    transition: background-color 0.2s;
 }
 
 .nav-button:hover {
     background-color: #333333;
 }
 
-/* Modal Popup Styles */
+/* Log Display Feed */
+#log-display-container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    align-items: center;
+}
+
+.log-card {
+    background-color: #f4f5f5;
+    color: #000000;
+    border-radius: 10px;
+    padding: 20px;
+    width: 100%;
+    text-align: left;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.log-card-title {
+    margin: 0 0 6px 0;
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.log-card-trigger,
+.log-card-location,
+.log-card-details,
+.log-card-time {
+    margin: 0 0 8px 0;
+    font-size: 0.95rem;
+    color: #333333;
+}
+
+/* Modal Styling */
 .modal {
-    display: none; /* Hidden by default */
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
     justify-content: center;
     align-items: center;
     z-index: 1000;
 }
 
-/* Modal box content */
 .modal-content {
-    background-color: #2a2a3c;
+    background-color: #1e222d;
     color: #ffffff;
-    padding: 24px;
-    border-radius: 10px;
+    padding: 28px;
+    border-radius: 12px;
     width: 90%;
-    max-width: 400px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    text-align: left;
+    max-width: 420px;
+    max-height: 90vh;
+    overflow-y: auto;
     position: relative;
-    font-family: "Times New Roman", Georgia, serif;
+    text-align: left;
 }
 
-/* Close button (x) */
 .close-btn {
     position: absolute;
     top: 12px;
     right: 16px;
-    font-size: 24px;
+    font-size: 20px;
     cursor: pointer;
     color: #aaaaaa;
 }
 
-.close-btn:hover {
-    color: #ffffff;
-}
-
-/* Form Layout */
-#log-form label {
+#log-form label,
+.auth-form label {
     display: block;
-    margin-top: 12px;
+    margin-top: 10px;
     margin-bottom: 4px;
-    font-size: 0.9rem;
+    font-weight: bold;
 }
 
-#log-form input, 
-#log-form textarea {
+select, 
+input[type="text"],
+input[type="number"],
+input[type="time"],
+input[type="date"],
+textarea {
     width: 100%;
-    padding: 8px;
+    padding: 8px 10px;
     border-radius: 6px;
-    border: 1px solid #444;
-    background-color: #1e1e2e;
-    color: #fff;
-    box-sizing: border-box;
+    border: 1px solid #cccccc;
+    background-color: #ffffff;
+    color: #000000;
     font-family: "Times New Roman", Georgia, serif;
+    font-size: 1rem;
 }
 
-/* Centers the Save Log button on its own row inside the form */
+textarea {
+    height: 80px;
+    resize: vertical;
+}
+
 .modal-button-row {
     display: flex;
     justify-content: center;
     width: 100%;
-    margin-top: 16px;
+    margin-top: 20px;
 }
 
-/* Log Cards displayed on the homepage */
-#log-display-container {
-    margin-top: 30px;
+.auth-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 32px 28px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+.auth-card h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.6rem;
+    text-align: center;
+    color: #111111;
+}
+
+.auth-form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    align-items: center;
+    gap: 12px;
 }
 
-.log-card {
-    background-color: #f4f4f5;
-    color: #000000;
-    border-radius: 8px;
-    padding: 16px 20px;
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-button.full-width {
     width: 100%;
-    max-width: 450px;
-    text-align: left;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    border-left: 5px solid #000000;
-}
-
-.log-card-title {
-    margin: 0 0 4px 0;
-    font-size: 1.25rem;
-}
-
-.log-card-date {
-    display: block;
-    color: #666666;
-    font-size: 0.85rem;
-    margin-bottom: 10px;
-}
-
-.log-card-notes {
-    margin: 0;
-    font-size: 1rem;
-    white-space: pre-wrap;
-}
-
-#log-form label {
-    display: block;
-    margin-top: 12px;
-    margin-bottom: 4px;
-    font-size: 0.9rem;
-}
-
-/* Explicitly targeted select elements and textareas */
-#log-form select option {
-    background-color: #1e1e2e;
-    color: #ffffff;
-}
-#log-form textarea {
-    width: 100%;
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #444;
-    background-color: #1e1e2e;
-    color: #fff;
-    box-sizing: border-box;
-    font-family: "Times New Roman", Georgia, serif;
-}
-
-/* Clear focus outlines for accessible dark fields */
-#log-form select:focus, 
-#log-form textarea:focus {
-    outline: none;
-    border-color: #666;
 }

@@ -1,35 +1,177 @@
-print them. Create or update your templates/summary.html file with this exact dynamic loop:html<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Epilog - Seizure Logs</title>
+    <title>Epilog - Log Summary</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <main class="container">
-        <h1 class="app-title">Seizure Logs</h1>
-        
-        <div style="margin-bottom: 30px;">
+        <h1 class="app-title">Log Summary</h1>
+
+        <div style="display: flex; justify-content: center; width: 100%; margin-bottom: 25px;">
             <a class="nav-button" href="{{ url_for('home') }}">Back to Home</a>
         </div>
 
-        <!-- Dynamic Container for Logs -->
+        <!-- Filter & Sort Form -->
+        <form method="GET" action="{{ url_for('summary') }}" style="margin-bottom: 25px; display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; align-items: center;">
+            <div>
+                <label for="sort" style="margin-right: 5px;">Sort:</label>
+                <select name="sort" id="sort" onchange="this.form.submit()">
+                    <option value="newest" {% if selected_sort == 'newest' %}selected{% endif %}>Newest First</option>
+                    <option value="oldest" {% if selected_sort == 'oldest' %}selected{% endif %}>Oldest First</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="episode_type" style="margin-right: 5px;">Type:</label>
+                <select name="episode_type" id="episode_type" onchange="this.form.submit()">
+                    <option value="">All Types</option>
+                    {% for type_option in episode_types %}
+                        <option value="{{ type_option }}" {% if selected_type == type_option %}selected{% endif %}>{{ type_option }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="trigger" style="margin-right: 5px;">Trigger:</label>
+                <select name="trigger" id="trigger" onchange="this.form.submit()">
+                    <option value="">All Triggers</option>
+                    {% for trigger_option in triggers %}
+                        <option value="{{ trigger_option }}" {% if selected_trigger == trigger_option %}selected{% endif %}>{{ trigger_option }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+
+        <!-- Log List Display -->
         <div id="log-display-container">
             {% if logs %}
                 {% for log in logs %}
                     <div class="log-card">
-                        <!-- log[1] = episode_type, log[3] = log_date, log[4] = log_time -->
-                        <h3 class="log-card-title">{{ log[1] }}</h3>
-                        <span class="log-card-date">Logged on: {{ log[3] }} at {{ log[4] }}</span>
-                        <!-- log[2] = details -->
-                        <p class="log-card-notes">{{ log[2] }}</p>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <h3 class="log-card-title">{{ log[2] }}</h3>
+                            
+                            <div style="display: flex; gap: 8px;">
+                                <button type="button" class="nav-button" style="padding: 4px 10px; font-size: 0.85rem;"
+                                        data-id="{{ log[0] }}"
+                                        data-type="{{ log[2] }}"
+                                        data-trigger="{{ log[3] or '' }}"
+                                        data-location="{{ log[4] or '' }}"
+                                        data-details="{{ log[5] or '' }}"
+                                        data-time1="{{ log[6] or '' }}"
+                                        data-time2="{{ log[7] or '' }}"
+                                        data-date="{{ log[8] or '' }}"
+                                        onclick="openEditLogModal(this)">Edit</button>
+
+                                <form action="{{ url_for('delete_log', log_id=log[0]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this log?');" style="margin: 0;">
+                                    <button type="submit" class="nav-button" style="padding: 4px 10px; font-size: 0.85rem; background-color: #8b0000;">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <p><strong>Date:</strong> {{ log[8] }}</p>
+                        {% if log[3] %}
+                            <p class="log-card-trigger"><strong>Trigger:</strong> {{ log[3] }}</p>
+                        {% endif %}
+                        {% if log[4] %}
+                            <p class="log-card-location"><strong>Location:</strong> {{ log[4] }}</p>
+                        {% endif %}
+                        {% if log[5] %}
+                            <p class="log-card-details"><strong>Details:</strong> {{ log[5] }}</p>
+                        {% endif %}
+                        {% if log[6] or log[7] %}
+                            <p class="log-card-time"><strong>Time:</strong> {{ log[6] }} - {{ log[7] }}</p>
+                        {% endif %}
                     </div>
                 {% endfor %}
             {% else %}
-                <p style="color: #666;">No seizure logs recorded yet.</p>
+                <p style="color: #666; text-align: center;">No logs found.</p>
             {% endif %}
         </div>
     </main>
+
+    <!-- Modal for Editing Logs -->
+    <div id="edit-log-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeEditLogModal()">&times;</span>
+            <h2 style="text-align: center; margin-top: 0; margin-bottom: 20px;">Edit Log</h2>
+
+            <form id="edit-log-form" method="POST" class="auth-form">
+                <div class="form-group">
+                    <label for="edit-episode-type">Episode Type:</label>
+                    <input type="text" id="edit-episode-type" name="episode_type" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-event-date">Date:</label>
+                    <input type="date" id="edit-event-date" name="event_date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-trigger">Trigger:</label>
+                    <input type="text" id="edit-trigger" name="trigger">
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-location">Location:</label>
+                    <input type="text" id="edit-location" name="location">
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-time1">Start Time:</label>
+                    <input type="time" id="edit-time1" name="time_1">
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-time2">End Time:</label>
+                    <input type="time" id="edit-time2" name="time_2">
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-details">Details:</label>
+                    <textarea id="edit-details" name="details" rows="4" style="width: 100%; border-radius: 6px; border: 1px solid #ccc; padding: 8px;"></textarea>
+                </div>
+
+                <div class="modal-button-row">
+                    <button type="submit" class="nav-button full-width">Update Log</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openEditLogModal(btnElement) {
+            const id = btnElement.getAttribute('data-id');
+            const type = btnElement.getAttribute('data-type');
+            const trigger = btnElement.getAttribute('data-trigger');
+            const location = btnElement.getAttribute('data-location');
+            const details = btnElement.getAttribute('data-details');
+            const time1 = btnElement.getAttribute('data-time1');
+            const time2 = btnElement.getAttribute('data-time2');
+            const date = btnElement.getAttribute('data-date');
+
+            document.getElementById('edit-log-form').action = '/edit_log/' + id;
+            document.getElementById('edit-episode-type').value = type;
+            document.getElementById('edit-event-date').value = date;
+            document.getElementById('edit-trigger').value = trigger;
+            document.getElementById('edit-location').value = location;
+            document.getElementById('edit-details').value = details;
+            document.getElementById('edit-time1').value = time1;
+            document.getElementById('edit-time2').value = time2;
+
+            document.getElementById('edit-log-modal').style.display = 'flex';
+        }
+
+        function closeEditLogModal() {
+            document.getElementById('edit-log-modal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('edit-log-modal');
+            if (event.target === modal) closeEditLogModal();
+        }
+    </script>
 </body>
 </html>

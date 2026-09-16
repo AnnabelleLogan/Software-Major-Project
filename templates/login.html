@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epilog - Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <h1 class="app-title">Epilog</h1>
+
+        <div class="auth-card">
+            <h2>Login</h2>
+
+            {% if error %}
+                <div class="auth-error">{{ error }}</div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('login') }}" class="auth-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required autocomplete="current-password">
+                </div>
+                <div class="modal-button-row">
+                    <button type="submit" class="nav-button full-width">Log In</button>
+                </div>
+            </form>
+
+            <p class="auth-switch">
+                Don't have an account? <a href="{{ url_for('register') }}">Register here</a>
+            </p>
+        </div>
+    </main>
+</body>
+</html>
